@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedVina AI - Phân Tích Đánh Giá Du Lịch Y Tế & Nha Khoa</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-badge"><i class="fa-solid fa-notes-medical"></i></div>
+                <div class="brand-text">
+                    <div class="brand-title">MedVina <span class="accent">AI</span></div>
+                </div>
+            </div>
+
+            <!-- 2 Chế độ làm việc cốt lõi -->
+            <nav class="nav-modes">
+                <button class="nav-btn active" data-tab="tab-single">
+                    <i class="fa-solid fa-pen-to-square"></i> Đánh Giá Đơn Lẻ
+                </button>
+                <button class="nav-btn" data-tab="tab-batch">
+                    <i class="fa-solid fa-file-csv"></i> Tải File CSV / Excel
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="app-main">
+
+        <!-- =================================================================== -->
+        <!-- TAB 1: PHÂN TÍCH ĐÁNH GIÁ ĐƠN LẺ -->
+        <!-- =================================================================== -->
+        <section id="tab-single" class="tab-content active">
+            <div class="section-intro">
+                <h1 class="page-title">Phân Tích Nhận Xét Khách Hàng</h1>
+            </div>
+
+            <div class="single-layout">
+                <!-- Cột trái: Nhập liệu -->
+                <div class="panel-card input-panel">
+                    <div class="panel-header">
+                        <span class="panel-label"><i class="fa-regular fa-comment-dots"></i> Nhận xét cần phân tích</span>
+                        <span class="char-count" id="single-char-count">0 ký tự</span>
+                    </div>
+
+                    <div class="textarea-box">
+                        <textarea id="single-review-input" placeholder="Nhập nhận xét của khách hàng tại đây (Ví dụ: Bác sĩ Nam nhổ răng rất mát tay không đau, nhưng cơ sở vật chất hơi chật và chờ hơi lâu)..."></textarea>
+                    </div>
+
+                    <!-- Mẫu thử nhanh -->
+                    <div class="sample-pills-bar">
+                        <span class="pills-title">Mẫu thử:</span>
+                        <button class="sample-pill" data-text="Bác sĩ tay nghề rất cao, nhổ răng khôn không hề đau đớn, nhân viên phụ tá chu đáo và nhiệt tình.">
+                            Khen bác sĩ & nhân viên
+                        </button>
+                        <button class="sample-pill" data-text="Giá trên web một đằng đến nơi thu một nẻo, chi phí phát sinh vô lý và bắt chờ gần 2 tiếng.">
+                            Chê chi phí & chờ đợi
+                        </button>
+                        <button class="sample-pill" data-text="Bác sĩ chuyên môn rất giỏi và mát tay nhưng cơ sở vật chất quá chật chội và phòng khám ồn ào.">
+                            Vừa khen vừa chê (Hỗn hợp)
+                        </button>
+                        <button class="sample-pill" data-text="pk bs nhiệt tình, csvc ok, làm răng êm ru không đau tí nào mn ơi">
+                            Phân tích từ viết tắt
+                        </button>
+                    </div>
+
+                    <!-- Nút thao tác -->
+                    <div class="panel-actions">
+                        <button id="btn-single-predict" class="btn btn-primary">
+                            Phân Tích Cảm Xúc
+                        </button>
+                        <button id="btn-single-clear" class="btn btn-secondary">
+                            <i class="fa-solid fa-rotate-left"></i> Xóa
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cột phải: Kết quả phân tích -->
+                <div class="panel-card result-panel">
+                    <div class="panel-header">
+                        <span class="panel-label"><i class="fa-solid fa-chart-pie"></i> Kết quả phân tích AI</span>
+                        <span class="latency-tag" id="single-latency" style="display: none;">0 ms</span>
+                    </div>
+
+                    <!-- Trạng thái chờ -->
+                    <div id="single-empty-state" class="empty-state">
+                        <div class="empty-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+                        <div class="empty-title">Chưa có kết quả phân tích</div>
+                        <div class="empty-desc">Nhập nhận xét ở khung bên trái hoặc chọn mẫu thử để xem phân tích cảm xúc và khía cạnh chi tiết.</div>
+                    </div>
+
+                    <!-- Trạng thái đang tải -->
+                    <div id="single-loading-state" class="loading-state" style="display: none;">
+                        <div class="spinner"></div>
+                        <div class="loading-text">Mô hình AI đang phân tích dữ liệu...</div>
+                    </div>
+
+                    <!-- Khối kết quả khi đã phân tích xong -->
+                    <div id="single-result-content" class="result-content" style="display: none;">
+                        <!-- Thẻ cảm xúc tổng quan -->
+                        <div class="sentiment-banner" id="single-sentiment-banner">
+                            <div class="sentiment-icon" id="single-sentiment-icon">
+                                <i class="fa-solid fa-face-smile"></i>
+                            </div>
+                            <div class="sentiment-details">
+                                <div class="sentiment-badge-label" id="single-sentiment-label">TÍCH CỰC</div>
+                                <div class="sentiment-conf-text">Độ tin cậy: <strong id="single-sentiment-conf">98.5%</strong></div>
+                            </div>
+                        </div>
+
+                        <!-- Xác suất 3 lớp -->
+                        <div class="probs-section">
+                            <div class="probs-title">Phân phối xác suất 3 nhãn cảm xúc:</div>
+                            <div class="probs-list">
+                                <div class="prob-row">
+                                    <span class="prob-name">Tích cực</span>
+                                    <div class="prob-bar-track">
+                                        <div class="prob-bar-fill fill-pos" id="bar-pos" style="width: 0%;"></div>
+                                    </div>
+                                    <span class="prob-pct" id="pct-pos">0%</span>
+                                </div>
+                                <div class="prob-row">
+                                    <span class="prob-name">Tiêu cực</span>
+                                    <div class="prob-bar-track">
+                                        <div class="prob-bar-fill fill-neg" id="bar-neg" style="width: 0%;"></div>
+                                    </div>
+                                    <span class="prob-pct" id="pct-neg">0%</span>
+                                </div>
+                                <div class="prob-row">
+                                    <span class="prob-name">Trung lập</span>
+                                    <div class="prob-bar-track">
+                                        <div class="prob-bar-fill fill-neu" id="bar-neu" style="width: 0%;"></div>
+                                    </div>
+                                    <span class="prob-pct" id="pct-neu">0%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bóc tách khía cạnh SERVQUAL -->
+                        <div class="aspects-section">
+                            <div class="aspects-title">Bóc tách theo 6 khía cạnh SERVQUAL:</div>
+                            <div class="aspects-grid" id="single-aspects-list">
+                                <!-- Rendered dynamically via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Chuẩn hóa văn bản -->
+                        <div class="normalized-box" id="single-normalized-box" style="display: none;">
+                            <div class="norm-header"><i class="fa-solid fa-spell-check"></i> Văn bản đã phân tích chuẩn hóa từ viết tắt:</div>
+                            <div class="norm-text" id="single-normalized-text"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- TAB 2: TẢI FILE CSV / EXCEL PHÂN TÍCH HÀNG LOẠT -->
+        <!-- =================================================================== -->
+        <section id="tab-batch" class="tab-content">
+            <div class="section-intro">
+                <h1 class="page-title">Phân Tích Hàng Loạt Từ File CSV / Excel</h1>
+            </div>
+
+            <!-- Upload Card -->
+            <div class="panel-card upload-panel">
+                <div class="upload-dropzone" id="drop-zone">
+                    <input type="file" id="batch-file-input" accept=".csv, .xlsx, .xls" hidden>
+                    <div class="drop-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                    <div class="drop-title">Kéo thả tệp CSV hoặc Excel (.xlsx) vào đây</div>
+                    <div class="drop-subtitle">Hoặc bấm vào đây để duyệt tệp từ máy tính</div>
+                    <div class="drop-hint">Hệ thống tự động nhận diện cột đánh giá: <code>review</code>, <code>comment</code>, <code>content</code>, <code>danh_gia</code>, <code>nhan_xet</code>...</div>
+                </div>
+
+                <!-- File Info Bar (Khi đã chọn file) -->
+                <div class="selected-file-bar" id="selected-file-bar" style="display: none;">
+                    <div class="file-info-group">
+                        <i class="fa-solid fa-file-csv file-icon"></i>
+                        <div class="file-meta">
+                            <div class="file-name" id="file-name-text">reviews.csv</div>
+                            <div class="file-size" id="file-size-text">0 KB</div>
+                        </div>
+                    </div>
+                    <button class="btn-remove-file" id="btn-remove-file" title="Xóa tệp"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <!-- Action Bar -->
+                <div class="upload-actions">
+                    <button id="btn-batch-analyze" class="btn btn-primary" disabled>
+                        <i class="fa-solid fa-chart-line"></i> Bắt Đầu Phân Tích Tệp
+                    </button>
+                    <a href="/api/sample-xlsx" class="btn btn-secondary btn-sample-download" download="Test_30_DanhGia_SongNgu_Anh_Viet.xlsx">
+                        <i class="fa-solid fa-file-excel"></i> Tải tệp XLSX mẫu
+                    </a>
+                </div>
+            </div>
+
+            <!-- Batch Loading State -->
+            <div id="batch-loading-state" class="loading-state card-loading" style="display: none;">
+                <div class="spinner"></div>
+                <div class="loading-text">Hệ thống đang tiền xử lý và suy luận cảm xúc hàng loạt...</div>
+                <div class="loading-subtext">Đang phân tích cú pháp, bóc tách khía cạnh SERVQUAL và gán nhãn cho từng bản ghi.</div>
+            </div>
+
+            <!-- Batch Results Container -->
+            <div id="batch-results-container" class="batch-results" style="display: none;">
+                
+                <!-- 1. BẢNG THỐNG KÊ TỔNG QUAN XU HƯỚNG -->
+                <div class="summary-cards-grid">
+                    <div class="summary-card card-total">
+                        <div class="summary-card-icon"><i class="fa-solid fa-database"></i></div>
+                        <div class="summary-card-val" id="metric-total">0</div>
+                        <div class="summary-card-lbl">Tổng Số Đánh Giá</div>
+                    </div>
+                    <div class="summary-card card-pos">
+                        <div class="summary-card-icon"><i class="fa-solid fa-face-smile"></i></div>
+                        <div class="summary-card-val"><span id="metric-pos-pct">0%</span> <span class="sub-count" id="metric-pos-count">(0)</span></div>
+                        <div class="summary-card-lbl">Hài Lòng (Tích Cực)</div>
+                    </div>
+                    <div class="summary-card card-neg">
+                        <div class="summary-card-icon"><i class="fa-solid fa-face-frown"></i></div>
+                        <div class="summary-card-val"><span id="metric-neg-pct">0%</span> <span class="sub-count" id="metric-neg-count">(0)</span></div>
+                        <div class="summary-card-lbl">Bất Bình (Tiêu Cực)</div>
+                    </div>
+                    <div class="summary-card card-neu">
+                        <div class="summary-card-icon"><i class="fa-solid fa-face-meh"></i></div>
+                        <div class="summary-card-val"><span id="metric-neu-pct">0%</span> <span class="sub-count" id="metric-neu-count">(0)</span></div>
+                        <div class="summary-card-lbl">Bình Thường (Trung Lập)</div>
+                    </div>
+                </div>
+
+                <!-- 2. PHÂN TÍCH XU HƯỚNG THEO 6 KHÍA CẠNH DỊCH VỤ -->
+                <div class="panel-card aspect-breakdown-panel">
+                    <div class="panel-header">
+                        <span class="panel-label"><i class="fa-solid fa-list-check"></i> Khách hàng khen / chê cụ thể về vấn đề gì? (6 Khía Cạnh SERVQUAL)</span>
+                    </div>
+                    <div class="aspect-insights-list" id="batch-aspect-list">
+                        <!-- Rendered dynamically via JS -->
+                    </div>
+                </div>
+
+                <!-- 3. BẢNG DỮ LIỆU CHI TIẾT TỪNG ĐÁNH GIÁ -->
+                <div class="panel-card table-panel">
+                    <div class="table-header-bar">
+                        <div class="table-title">
+                            <i class="fa-solid fa-table-list"></i> Danh Sách Chi Tiết Từng Đánh Giá
+                            <span class="row-count-badge" id="table-row-count">0 dòng</span>
+                        </div>
+                        <div class="table-controls">
+                            <!-- Bộ lọc cảm xúc -->
+                            <div class="filter-group">
+                                <button class="filter-btn active" data-filter="all">Tất cả</button>
+                                <button class="filter-btn" data-filter="Negative">Tiêu cực (Chê)</button>
+                                <button class="filter-btn" data-filter="Positive">Tích cực (Khen)</button>
+                                <button class="filter-btn" data-filter="Neutral">Trung lập</button>
+                            </div>
+
+                            <!-- Nút tải file CSV kết quả -->
+                            <button id="btn-export-csv" class="btn btn-export">
+                                <i class="fa-solid fa-file-arrow-down"></i> Tải Xuất File (.CSV)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bảng dữ liệu cuộn -->
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">STT</th>
+                                    <th>Nội Dung Nhận Xét</th>
+                                    <th class="col-sentiment">Dự Đoán Cảm Xúc</th>
+                                    <th style="width: 240px;">Khía Cạnh Phát Hiện</th>
+                                </tr>
+                            </thead>
+                            <tbody id="batch-table-body">
+                                <!-- Rendered dynamically via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div>MedVina AI - Hệ Thống Phân Tích Cảm Xúc Y Tế & Nha Khoa Việt Nam</div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Large Cache Files (>50MB)
+*.npz
+data/phobert_embeddings_cache.npz
+data/Raw_Sources/
+
+# IDE & OS Artifacts
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
