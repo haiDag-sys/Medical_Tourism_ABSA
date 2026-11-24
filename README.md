@@ -96,4 +96,4 @@ Thực nghiệm trên **3,973 mẫu kiểm thử độc lập** (phân tầng t�
 
 ## 👨‍💻 Tác Giả & Bản Quyền
 *   **Sinh viên thực hiện:** Nguyễn Hải Đăng - MSSV: B2308351
-*   **Đơn vị:** Ngành Khoa học Máy tính – Trường Công nghệ Thông tin & Truyền thông – Trường Đại học Cần Thơ.
+*   **Đơn vị:** Ngành Khoa học Máy tính – Trường Công nghệ Thông tin & Truyền thông – Đại học Cần Thơ.
